@@ -1,0 +1,34 @@
+
+<!DOCTYPE html><html><head><title>PGRestAPI</title>
+<link rel="stylesheet" href="/stylesheets/style.css"><link rel="stylesheet" href="/fonts/fonts.css">
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js?2"></script></head><body><div class="header">
+
+<script>var mapUrl = "http://localhost:3001/services/postgis/broadcast/wkb_geometry/dynamicMap";
+var XMIN = -179.685652;
+var YMIN = -48.816652;
+var XMAX = -174.580002;
+var YMAX = 66.526727;
+</script><!--Map Div--><div id="map" style="height:800px;width:1200px;"></div><!--Load Leaflet-->
+<script>var map = L.map('map');
+var bounds = [[YMIN, XMIN], [YMAX, XMAX]]; //SouthWest, NorthEast (Lat Lon, Lat Lon) grr.
+L.tileLayer('http://{s}.tiles.mapbox.com/v3/examples.map-qfyrx5r8/{z}/{x}/{y}.png').addTo(map);
+
+//Add preview
+L.tileLayer(mapUrl + '/{z}/{x}/{y}.pbf?where=voyageid%3d2').addTo(map);
+
+// zoom the map to the rectangle bounds
+map.fitBounds(bounds);
+/*var args = {
+	    where: 'voyageid=1',
+	    format: 'vector',
+	    returnGeometry: 'yes',
+	    returnGeometryEnvelopes: 'no'
+	};
+	 
+	//jQuery POST
+	$.post('http://localhost:3001/services/tables/broadcast/query', args).done(function (data) {
+	   //Callback on success
+	   console.log(data);
+	})*/
+</script></div>

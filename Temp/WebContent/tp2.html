@@ -1,0 +1,69 @@
+
+<!DOCTYPE html><html><head><title>PGRestAPI</title><link rel="stylesheet" href="/stylesheets/style.css"><link rel="stylesheet" href="/fonts/fonts.css"><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css"><script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js?2"></script></head><body><div class="header"><div class="widthRestriction"><a href="/services/tables" alt="Table Listing"><img src="/img/logo.png" alt="logo" style="height:65px;"></a><div class="navLinks right"><a id="services" href="/services">Services</a><a id="tableListing" href="/services/tables">Table Listing</a><a id="geoprocessing" href="/services/geoprocessing">Geoprocessing</a><a id="utilities" href="/services/utilities">Utilities</a></div></div></div><div class="container"><div class="breadcrumbs"><a href="/services">Home</a>&nbsp;
+&#9654;
+&nbsp;<a href="/services/tables/">Table Listing</a>&nbsp;
+&#9654;
+&nbsp;<a href="/services/tables/broadcast">broadcast</a>&nbsp;<span class="blue">&#9654;</span>&nbsp;<span class="blue">Dynamic Vector Tiles</span></div><div class="main-content clearfix"><h4>Vector Tile Service</h4><div class="results"><script type="text/javascript" src="/scripts/pbf/vectortile/vectortilelayer.js"></script><script type="text/javascript" src="/scripts/pbf/vectortile/vectortilefeature.js"></script><script type="text/javascript" src="/scripts/pbf/vectortile/vectortile.js"></script><script type="text/javascript" src="/scripts/pbf/vectortile/pbf/ieee/ieee.js"></script><script type="text/javascript" src="/scripts/pbf/vectortile/pbf/pbf.js"></script><script type="text/javascript" src="/scripts/pbf/vectortile/point.js"></script><script type="text/javascript" src="/scripts/pbf/TileLayer.PBF/TileLayer.PBFSource.js"></script><script type="text/javascript" src="/scripts/pbf/TileLayer.PBF/TileLayer.PBFLayer.js"></script><script type="text/javascript" src="/scripts/pbf/TileLayer.PBF/PBFFeature.js"></script><script>var mapUrl = "http://localhost:3001/services/postgis/broadcast/wkb_geometry/vector-tiles";
+var XMIN = -179.685652;
+var YMIN = -48.816652;
+var XMAX = -174.580002;
+var YMAX = 66.526727;
+</script><!--Map Div--><div id="map" style="height:400px;width:400px;"></div><!--Load Leaflet--><script>var map = L.map('map');
+var bounds = [[YMIN, XMIN], [YMAX, XMAX]]; //SouthWest, NorthEast (Lat Lon, Lat Lon) grr.
+
+L.tileLayer('http://{s}.tiles.mapbox.com/v3/examples.map-qfyrx5r8/{z}/{x}/{y}.png').addTo(map);
+
+//Highly experimental Mapnik Vector Tiles PBFLayer
+var pbfSource = new L.TileLayer.PBFSource({
+    url: mapUrl + '/{z}/{x}/{y}.pbf',
+    debug: false,
+    clickableLayers: [],
+    getIDForLayerFeature: function(feature) {
+        return "";
+    },
+     /**
+     * The filter function gets called when iterating though each vector tile feature (vtf). You have access
+     * to every property associated with a given feature (the feature, and the layer). You can also filter
+     * based of the context (each tile that the feature is drawn onto).
+     *
+     * Returning false skips over the feature and it is not drawn.
+     *
+     * @param feature
+     * @returns {boolean}
+     */
+    filter: function(feature, context) {
+        return true;
+    }
+});
+
+//Globals that we can change later.
+var fillColor = 'rgba(149,139,255,0.4)';
+var strokeColor = 'rgb(20,20,20)';
+
+pbfSource.styleFor = pbfStyle;
+function pbfStyle(feature) {
+    var style = {};
+    var type = feature.type;
+    switch (type) {
+        case 1: //'Point'
+            style.color = 'rgba(252,146,114,0.6)';
+            style.radius = 5;
+                    case 2: //'LineString'
+            style.color = 'rgba(161,217,155,0.8)';
+            style.size = 3;
+                    case 3: //'Polygon'
+            style.color = fillColor;
+            style.outline = {
+                color: strokeColor,
+                size: 2
+            };
+    }
+    return style;
+}
+
+//Add layer
+map.addLayer(pbfSource);
+
+// zoom the map to the rectangle bounds
+map.fitBounds(bounds);
+</script><div class="section"><h3>Code Sample</h3><span>Here's the vector tile endpoint:</span><pre class="codePreview">http://localhost:3001/services/postgis/broadcast/wkb_geometry/vector-tiles/{z}/{x}/{y}.pbf;</pre><div class="helpLink">Get more help with<a href="http://leafletjs.com/" target="_blank">Leaflet</a></div></div></div></div><div class="main-content clearfix"></div><div class="main-content clearfix"></div></div><div class="sidebar"></div><script type="text/javascript" src="/stylesheets/layout.js"></script><script type="text/javascript" src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script></body><footer class="clearfix"><div class="left">&copy; 2014 Spatial Development International All Rights Reserved.</div><div class="right"><img src="/img/sdlogo.jpg"></div></footer></html>
